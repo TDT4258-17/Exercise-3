@@ -1,0 +1,17 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <linux/fb.h>
+
+int main(int argc, char *argv[])
+{
+	printf("Hello World, I'm game!\n");
+	
+	struct fb_copyarea = rect;
+	rect.dx = 160;
+	rect.dy = 120;
+	rect.width = 120;
+	rect.width = 80;
+	
+
+	exit(EXIT_SUCCESS);
+}
