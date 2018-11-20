@@ -17,7 +17,7 @@
 
 static int __init template_init(void)
 {
-	printk("Hello World, here is your module speaking\n");
+	printk("Hello World, here is your module speakingg\n");
 	return 0;
 }
 
@@ -35,6 +35,8 @@ static void __exit template_cleanup(void)
 
 module_init(template_init);
 module_exit(template_cleanup);
+//module_init(__init);
+//module_exit(__exit);
 
 MODULE_DESCRIPTION("Small module, demo only, not very useful.");
 MODULE_LICENSE("GPL");
