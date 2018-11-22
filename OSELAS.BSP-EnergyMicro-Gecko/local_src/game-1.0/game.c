@@ -4,7 +4,9 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #include <sys/mman.h>
 
@@ -14,7 +16,7 @@ int main(int argc, char *argv[])
 	
 	int fbfd = open("/dev/fb0", O_RDWR);
 
-	char* screen = mmap(NULL, 153592, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
+	volatile short* screen = mmap(0, 320*240*2, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
 	if (screen == -1)
 	{
 		printf("ERROR creating memory map for the screen.\n");
@@ -23,29 +25,41 @@ int main(int argc, char *argv[])
 	struct fb_copyarea rect;
 	rect.dx = 0;
 	rect.dy = 0;
-	rect.width = 360;
+	rect.width = 320;
 	rect.height = 240;
 
 
-	screen[0] = 'Z';
-	screen[1] = 'Z';
-	screen[2] = 'Z';
-	screen[3] = 'Z';
+	screen[0] = 'Z' + ('Z' << 8);
+	screen[1] = 'Z' + ('Z' << 8);
+	screen[2] = 'Z' + ('Z' << 8);
+	screen[3] = 'Z' + ('Z' << 8);
 
-	screen[3000] = 'Z';
-	screen[3001] = 'Z';
-	screen[3002] = 'Z';
-	screen[3003] = 'Z';
+	screen[3000] = 'Z' + ('Z' << 8);
+	screen[3001] = 'Z' + ('Z' << 8);
+	screen[3002] = 'Z' + ('Z' << 8);
+	screen[3003] = 'Z' + ('Z' << 8);
+
+	screen[6000] = 3 << 12;
+	screen[6001] = 15 << 12;
+	screen[6002] = 'Z' + ('Z' << 8);
+	screen[6003] = 'Z' + ('Z' << 8);
 
 
-	//ioctl(fbfd, 0x4680, &rect);
-	
-	printf("Did it work?\n");
-	printf("it didn't, didn't it?\n");
+	char* data = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";
+	//lseek(fbfd, 0, SEEK_SET);
+	int i;
+	for (i = 0; i < 360*240; i++)
+	{
+		screen[i] = 'Z' + ('Z' << 8);
+		//lseek(fbfd, 360*2*i, SEEK_SET);
+		//write(fbfd, data, 360*2);
+	}
 
-//	char* data = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";
-//	lseek(fbfd, 3000, SEEK_SET);
-//	write(fbfd, data, 30);
+	ioctl(fbfd, 0x4680, &rect);
+
+	//char* data = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";
+	//lseek(fbfd, 3000, SEEK_SET);
+	//write(fbfd, data, 30);
 
 
 	close(fbfd);

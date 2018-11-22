@@ -3,9 +3,12 @@
 /platforms
 /projectroot
 /rules
-#/selected_toolchain
+/selected_toolchain
+/selected_platformconfig
+/selected_ptxconfig
 /src
 /tests
 gerp
 grep
 README
+*.gdb
