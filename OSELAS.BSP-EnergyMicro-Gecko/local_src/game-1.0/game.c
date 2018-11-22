@@ -10,6 +10,8 @@
 
 #include <sys/mman.h>
 
+#define RGB_TO_16BIT(r, g, b) (((r & 0x1f) << 11) + ((g & 0x3f) << 5) + (b & 0x1f))
+
 int main(int argc, char *argv[])
 {
 	printf("Hello World, I'm game!\n");
@@ -28,39 +30,14 @@ int main(int argc, char *argv[])
 	rect.width = 320;
 	rect.height = 240;
 
-
-	screen[0] = 'Z' + ('Z' << 8);
-	screen[1] = 'Z' + ('Z' << 8);
-	screen[2] = 'Z' + ('Z' << 8);
-	screen[3] = 'Z' + ('Z' << 8);
-
-	screen[3000] = 'Z' + ('Z' << 8);
-	screen[3001] = 'Z' + ('Z' << 8);
-	screen[3002] = 'Z' + ('Z' << 8);
-	screen[3003] = 'Z' + ('Z' << 8);
-
-	screen[6000] = 3 << 12;
-	screen[6001] = 15 << 12;
-	screen[6002] = 'Z' + ('Z' << 8);
-	screen[6003] = 'Z' + ('Z' << 8);
-
-
-	char* data = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";
-	//lseek(fbfd, 0, SEEK_SET);
 	int i;
 	for (i = 0; i < 360*240; i++)
 	{
-		screen[i] = 'Z' + ('Z' << 8);
-		//lseek(fbfd, 360*2*i, SEEK_SET);
-		//write(fbfd, data, 360*2);
+		//screen[i] = 'Z' + ('Z' << 8);
+		screen[i] = RGB_TO_16BIT(i%32,2*(i%32),i%32);
 	}
 
 	ioctl(fbfd, 0x4680, &rect);
-
-	//char* data = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";
-	//lseek(fbfd, 3000, SEEK_SET);
-	//write(fbfd, data, 30);
-
 
 	close(fbfd);
 
