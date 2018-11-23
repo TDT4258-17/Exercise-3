@@ -53,8 +53,6 @@ int main(int argc, char *argv[])
 
 	unsigned short px = 140;
 	unsigned short py = 120;
-	unsigned short px_old;
-	unsigned short py_old;
 
 
 	drawMap(fbfd, currentMap, screen);
@@ -72,34 +70,27 @@ int main(int argc, char *argv[])
 		buttons_old = buttons;
 		readButtons(&buttons, gpio);
 
-		px_old = px;
-		py_old = py;
-
 		if (buttons.left & !buttons_old.left)
 		{
-			px = px - 20;
+			movePlayer(fbfd, currentMap, -20, 0, &px, &py, screen);
 		}
 		if (buttons.up & !buttons_old.up)
 		{
-			py = py - 20;
+			movePlayer(fbfd, currentMap, 0, -20, &px, &py, screen);
 		}
 		if (buttons.right & !buttons_old.right)
 		{
-			px = px + 20;
+			movePlayer(fbfd, currentMap, 20, 0, &px, &py, screen);
 		}
 		if (buttons.down & !buttons_old.down)
 		{
-			py = py + 20;
+			movePlayer(fbfd, currentMap, 0, 20, &px, &py, screen);
 		}
 
 		if (buttons.x)
 		{
 			quit = 1;
 		}
-
-		drawPlayerDiscrete(fbfd, currentMap, px, py, px_old, py_old, screen);
-
-		//drawPlayer(fbfd, currentMap, px, py, screen);
 
 		usleep(33000);
 	}
@@ -109,6 +100,33 @@ int main(int argc, char *argv[])
 	close(gpfd);
 
 	exit(EXIT_SUCCESS);
+}
+
+void movePlayer(int fd, int mapIndex, signed char dx, signed char dy, unsigned short* px, unsigned short* py, volatile short* screen) 
+{
+	const unsigned char* map = maps[mapIndex];
+	
+	unsigned short pxPrev = *px;
+	unsigned short pyPrev = *py;
+	
+	// still need to check borders
+	
+	int mapTile = ((16*((*py+dy)/20))+((*px+dx)/20));
+	
+	if ((mapTile % 2 == 0) && ((map[mapTile] & (1 << 7)) == 0))	// mapTile is even AND move is valid
+	{
+		*px += dx;
+		*py += dy;
+	}
+	else if ((map[mapTile] & (1 << 3)) == 0)  	// mapTile is odd AND move is valid
+	{
+		*px += dx;
+		*py += dy;
+	}
+	
+	drawPlayerDiscrete(fd, mapIndex, px, py, pxPrev, pyPrev, screen);
+	
+	
 }
 
 void readButtons(struct Buttons* buttons, unsigned char gpio)
@@ -304,5 +322,3 @@ void drawPlayerDiscrete(int fd, int mapIndex, unsigned short px, unsigned short 
 
 	ioctl(fd, 0x4680, &rect);
 }
-
-
