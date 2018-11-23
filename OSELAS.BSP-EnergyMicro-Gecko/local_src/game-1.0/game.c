@@ -53,6 +53,8 @@ int main(int argc, char *argv[])
 
 	unsigned short px = 140;
 	unsigned short py = 120;
+	unsigned short px_old;
+	unsigned short py_old;
 
 
 	drawMap(fbfd, currentMap, screen);
@@ -70,7 +72,8 @@ int main(int argc, char *argv[])
 		buttons_old = buttons;
 		readButtons(&buttons, gpio);
 
-
+		px_old = px;
+		py_old = py;
 
 		if (buttons.left & !buttons_old.left)
 		{
@@ -94,7 +97,10 @@ int main(int argc, char *argv[])
 			quit = 1;
 		}
 
-		drawPlayer(fbfd, currentMap, px, py, screen);
+		drawPlayerDiscrete(fbfd, currentMap, px, py, px_old, py_old, screen);
+
+		//drawPlayer(fbfd, currentMap, px, py, screen);
+
 		usleep(33000);
 	}
 
@@ -240,3 +246,63 @@ void drawPlayer(int fd, int mapIndex, unsigned short px, unsigned short py, vola
 	// pushing buffer to screen
 	ioctl(fd, 0x4680, &rect);
 }
+
+void drawPlayerDiscrete(int fd, int mapIndex, unsigned short px, unsigned short py, unsigned short px_old, unsigned short py_old, volatile short* screen)
+{
+	int i;
+	int j;
+
+	const unsigned char* map = maps[mapIndex];
+	const unsigned short* player = sprites[2];
+
+	unsigned char tileIndex = px_old/20 + (py_old/20) * 16;
+	unsigned char tileID = (map[tileIndex/2] >> 4*(tileIndex%2)) & 0x0f;
+	const unsigned short* tile = sprites[tileID];
+
+	// redrawing tile
+	int offset = px_old + 320*py_old;
+	for (j = 0; j < 20; j++)
+	{
+		for (i = 0; i < 20; i++)
+		{
+			int index = i + 20*j;
+			if (tile[index] != 0)
+			{
+				screen[offset + 320*j + i] = tile[index];
+			}
+		}
+	}
+
+	// drawing new player pos
+	offset = px + 320*py;
+	for (j = 0; j < 20; j++)
+	{
+		for (i = 0; i < 20; i++)
+		{
+			int index = i + 20*j;
+			if (player[index] != 0)
+			{
+				screen[offset + 320*j + i] = player[index];
+			}
+		}
+	}
+
+	// easiest (also simplest?) way is to issue two ioctl calls
+	// instead of one ioctl call where the rects are combined in some smart way
+	struct fb_copyarea rect;
+	rect.dx = px_old;
+	rect.dy = py_old;
+	rect.width = 20;
+	rect.height = 20;
+
+	ioctl(fd, 0x4680, &rect);
+
+	rect.dx = px;
+	rect.dy = py;
+	rect.width = 20;
+	rect.height = 20;
+
+	ioctl(fd, 0x4680, &rect);
+}
+
+
