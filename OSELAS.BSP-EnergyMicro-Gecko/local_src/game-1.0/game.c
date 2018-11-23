@@ -13,8 +13,21 @@
 
 #include "gamedata.h"
 
+struct Buttons{
+	unsigned char left;
+	unsigned char up;
+	unsigned char right;
+	unsigned char down;
+
+	unsigned char y;
+	unsigned char x;
+	unsigned char a;
+	unsigned char b;
+};
+
 void drawMap(int fd, int mapIndex, volatile short* screen);
 void drawPlayer(int fd, int mapIndex, unsigned short px, unsigned short py, volatile short* screen);
+void readButtons(struct Buttons* buttons, unsigned char gpio);
 
 int main(int argc, char *argv[])
 {
@@ -25,17 +38,6 @@ int main(int argc, char *argv[])
 	if (gpfd < 0)
 	{
 		printf("ERROR opening gamepad device.\n");
-	}
-
-	char buttons;
-	int test = read(gpfd, &buttons, 0);
-	if (test < 0)
-	{
-		printf("ERROR reading buttons.\n");
-	}
-	else
-	{
-		printf("%i: what is this?\n", (int)buttons);
 	}
 
 	volatile short* screen = mmap(0, 320*240*2, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
@@ -49,51 +51,51 @@ int main(int argc, char *argv[])
 
 	unsigned char currentMap = 0;
 
-	unsigned short px = 111;
-	unsigned short py = 131;
+	unsigned short px = 140;
+	unsigned short py = 120;
 
 
 	drawMap(fbfd, currentMap, screen);
 
 	int quit = 0;
 
+	struct Buttons buttons;
+	struct Buttons buttons_old;
+
 	while (quit == 0)
 	{
-		int test = read(gpfd, &buttons, 0);
+		unsigned char gpio;
+		int test = read(gpfd, &gpio, 0);
 
-		unsigned char btn_left = buttons & 0x01;
-		unsigned char btn_up = (buttons & 0x02) >> 1;
-		unsigned char btn_right = (buttons & 0x04) >> 2;
-		unsigned char btn_down = (buttons & 0x08) >> 3;
+		buttons_old = buttons;
+		readButtons(&buttons, gpio);
 
-		unsigned char btn_y = (buttons & 0x10) >> 4;
-		unsigned char btn_x = (buttons & 0x20) >> 5;
-		unsigned char btn_a = (buttons & 0x40) >> 6;
-		unsigned char btn_b = (buttons & 0x80) >> 7;
 
-		if (btn_left)
+
+		if (buttons.left & !buttons_old.left)
 		{
-			px = px - 3;
+			px = px - 20;
 		}
-		if (btn_up)
+		if (buttons.up & !buttons_old.up)
 		{
-			py = py - 3;
+			py = py - 20;
 		}
-		if (btn_right)
+		if (buttons.right & !buttons_old.right)
 		{
-			px = px + 3;
+			px = px + 20;
 		}
-		if (btn_down)
+		if (buttons.down & !buttons_old.down)
 		{
-			py = py + 3;
+			py = py + 20;
 		}
 
-		if (btn_x)
+		if (buttons.x)
 		{
 			quit = 1;
 		}
+
 		drawPlayer(fbfd, currentMap, px, py, screen);
-		usleep(100000);
+		usleep(33000);
 	}
 
 
@@ -101,6 +103,19 @@ int main(int argc, char *argv[])
 	close(gpfd);
 
 	exit(EXIT_SUCCESS);
+}
+
+void readButtons(struct Buttons* buttons, unsigned char gpio)
+{
+	buttons->left = gpio & 0x01;
+	buttons->up = (gpio & 0x02) >> 1;
+	buttons->right = (gpio & 0x04) >> 2;
+	buttons->down = (gpio & 0x08) >> 3;
+
+	buttons->y = (gpio & 0x10) >> 4;
+	buttons->x = (gpio & 0x20) >> 5;
+	buttons->a = (gpio & 0x40) >> 6;
+	buttons->b = (gpio & 0x80) >> 7;
 }
 
 void drawMap(int fd, int mapIndex, volatile short* screen)
