@@ -14,19 +14,6 @@
 #include "gamedata.h"
 #include "gameLogic.h"
 
-struct Buttons{
-	unsigned char left;
-	unsigned char up;
-	unsigned char right;
-	unsigned char down;
-
-	unsigned char y;
-	unsigned char x;
-	unsigned char a;
-	unsigned char b;
-};
-
-void readButtons(struct Buttons* buttons, unsigned char gpio);
 
 int main(int argc, char *argv[])
 {
@@ -55,6 +42,7 @@ int main(int argc, char *argv[])
 
 
 	drawMap(fbfd, currentMap, screen);
+
 
 	int quit = 0;
 
@@ -101,16 +89,3 @@ int main(int argc, char *argv[])
 	exit(EXIT_SUCCESS);
 }
 
-
-void readButtons(struct Buttons* buttons, unsigned char gpio)
-{
-	buttons->left = gpio & 0x01;
-	buttons->up = (gpio & 0x02) >> 1;
-	buttons->right = (gpio & 0x04) >> 2;
-	buttons->down = (gpio & 0x08) >> 3;
-
-	buttons->y = (gpio & 0x10) >> 4;
-	buttons->x = (gpio & 0x20) >> 5;
-	buttons->a = (gpio & 0x40) >> 6;
-	buttons->b = (gpio & 0x80) >> 7;
-}

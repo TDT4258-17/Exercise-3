@@ -1,9 +1,21 @@
-
-
 #include <linux/fb.h>
 
 #include "gameLogic.h"
 #include "gamedata.h"
+
+
+void readButtons(struct Buttons* buttons, unsigned char gpio)
+{
+	buttons->left = gpio & 0x01;
+	buttons->up = (gpio & 0x02) >> 1;
+	buttons->right = (gpio & 0x04) >> 2;
+	buttons->down = (gpio & 0x08) >> 3;
+
+	buttons->y = (gpio & 0x10) >> 4;
+	buttons->x = (gpio & 0x20) >> 5;
+	buttons->a = (gpio & 0x40) >> 6;
+	buttons->b = (gpio & 0x80) >> 7;
+}
 
 void drawMap(int fd, int mapIndex, volatile short* screen)
 {
