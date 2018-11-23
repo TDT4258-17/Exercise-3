@@ -9,8 +9,8 @@ int main()
 
 	std::fstream file;
 	std::fstream ofile;
-	file.open("grass.bmp", std::ios::in );
-	ofile.open("grass_tile.txt", std::ios::out );
+	file.open("tile_textures/ice.bmp", std::ios::in );
+	ofile.open("converted_textures/ice_tile.txt", std::ios::out );
 
 	std::string string;
 	std::string string2;
@@ -49,7 +49,7 @@ int main()
 		ofile << rgb;
 
 
-		if (i > size + 4 - 1200)
+		if (i > sizze + 4 - 1200)
 			ofile << ", ";
 		else
 			std::cout << "Length of string: " << i+3 << "\n";
