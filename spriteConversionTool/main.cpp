@@ -7,16 +7,18 @@ int main()
 
 	std::fstream file;
 	std::fstream ofile;
-	file.open("Untitled.txt", std::ios::in );
+	file.open("player.bmp", std::ios::in );
 	ofile.open("test_tile.txt", std::ios::out );
 
 	std::string string;
 	std::string ostring;
 
+	file.seekg(122, file.beg);
+
 	file >> string;
 
-	unsigned int spriteNumber = 0;
-	ofile << "unsigned short* sprite" << spriteNumber << " = {\t";
+	unsigned int spriteNumber = 2;
+	ofile << "const unsigned short sprite" << spriteNumber << "[400] = {\t";
 
 	unsigned short rgb = 0;
 	unsigned int size = string.size();
@@ -34,7 +36,7 @@ int main()
 			std::cout << "Length of string: " << i+3 << "\n";
 
 		if ((i+3) % 15 == 0)
-			ofile << "\n\t\t\t\t\t\t\t";
+			ofile << "\n\t\t\t\t\t\t\t\t\t\t";
 	}
 
 	ofile << "};";

@@ -13,7 +13,8 @@
 
 #include "gamedata.h"
 
-unsigned short sprite0[400];
+void drawMap(int fd, int mapIndex, volatile short* screen);
+void drawPlayer(int fd, int mapIndex, unsigned short px, unsigned short py, volatile short* screen);
 
 int main(int argc, char *argv[])
 {
@@ -38,10 +39,72 @@ int main(int argc, char *argv[])
 	}
 
 	volatile short* screen = mmap(0, 320*240*2, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
-	if (screen == -1)
+	if (!screen)
 	{
 		printf("ERROR creating memory map for the screen.\n");
 	}
+
+
+
+
+	unsigned char currentMap = 0;
+
+	unsigned short px = 111;
+	unsigned short py = 131;
+
+
+	drawMap(fbfd, currentMap, screen);
+
+	int quit = 0;
+
+	while (quit == 0)
+	{
+		int test = read(gpfd, &buttons, 0);
+
+		unsigned char btn_left = buttons & 0x01;
+		unsigned char btn_up = (buttons & 0x02) >> 1;
+		unsigned char btn_right = (buttons & 0x04) >> 2;
+		unsigned char btn_down = (buttons & 0x08) >> 3;
+
+		unsigned char btn_y = (buttons & 0x10) >> 4;
+		unsigned char btn_x = (buttons & 0x20) >> 5;
+		unsigned char btn_a = (buttons & 0x40) >> 6;
+		unsigned char btn_b = (buttons & 0x80) >> 7;
+
+		if (btn_left)
+		{
+			px = px - 3;
+		}
+		if (btn_up)
+		{
+			py = py - 3;
+		}
+		if (btn_right)
+		{
+			px = px + 3;
+		}
+		if (btn_down)
+		{
+			py = py + 3;
+		}
+
+		if (btn_x)
+		{
+			quit = 1;
+		}
+		drawPlayer(fbfd, currentMap, px, py, screen);
+		usleep(100000);
+	}
+
+
+	close(fbfd);
+	close(gpfd);
+
+	exit(EXIT_SUCCESS);
+}
+
+void drawMap(int fd, int mapIndex, volatile short* screen)
+{
 
 	struct fb_copyarea rect;
 	rect.dx = 0;
@@ -49,113 +112,116 @@ int main(int argc, char *argv[])
 	rect.width = 320;
 	rect.height = 240;
 
-	int i;/*
-	for (i = 0; i < 360*240; i++)
+	int k;
+	int i;
+	int j;
+
+	const unsigned char* map = maps[mapIndex];
+
+	// in the moment it seemed to me to be easier to iterate 
+	// through tiles/sprites and not through the bytes in the map ...
+	for (k = 0; k < SCREEN_SPRITE_COUNT; k++)
 	{
-		//screen[i] = 'Z' + ('Z' << 8);
-		screen[i] = RGB_TO_16BIT(i%32,2*(i%32),i%32);
-	}
+		// .. which is why k is divided by two here while
+		// decoding the tile/sprite
+		unsigned char spriteID = (map[k/2] >> 4*(k%2)) & 0x0f;
+		const unsigned short* sprite = sprites[spriteID];
 
-	ioctl(fbfd, 0x4680, &rect);*/
+		// decoding tile position
+		int x = (20*k)%320;
+		int y = 20*((20*k)/320);
+		int offset = x + 320*y;
 
-
-	int j = 0;
-	for (i = 0; i < 400; i++)
-	{
-		screen[30000 + i + 300*j] = sprite0[i];
-		if (i % 20 == 0 && i != 0)
+		// drawing tile to the screen buffer
+		for (j = 0; j < 20; j++)
 		{
-			j++;
+			for (i = 0; i < 20; i++)
+			{
+				screen[offset + 320*j + i] = sprite[i + 20*j];
+			}
 		}
 	}
-
-	ioctl(fbfd, 0x4680, &rect);
-
-	close(fbfd);
-
-	exit(EXIT_SUCCESS);
+	// pushing buffer to screen
+	ioctl(fd, 0x4680, &rect);
 }
 
 
+void drawPlayer(int fd, int mapIndex, unsigned short px, unsigned short py, volatile short* screen)
+{
+	short tile_ul_x = px/20;
+	short tile_ul_y = py/20;
 
-unsigned short sprite0[400] = {	21162, 23243, 25388, 27501, 29614, 
-							31695, 31727, 31727, 31727, 31727, 
-							31727, 31695, 31695, 29582, 29582, 
-							27469, 27469, 25388, 25356, 25356, 
-							21162, 25356, 27501, 31695, 33808, 
-							33840, 35953, 35953, 38034, 38034, 
-							38034, 35953, 35921, 33808, 31695, 
-							29614, 27469, 25388, 25356, 25356, 
-							23243, 27469, 31695, 35921, 40147, 
-							42260, 42292, 44373, 44373, 44373, 
-							42260, 42292, 40179, 40147, 35921, 
-							31727, 29614, 27469, 25388, 25356, 
-							25356, 29614, 35953, 40179, 46486, 
-							48599, 48631, 50712, 50712, 50712, 
-							48631, 48631, 48599, 44405, 42292, 
-							38034, 33808, 31695, 27469, 25388, 
-							27501, 33808, 40179, 46518, 50744, 
-							54938, 54970, 54970, 57051, 54970, 
-							54970, 54970, 52857, 50744, 46518, 
-							42292, 35953, 33808, 29582, 27469, 
-							29582, 35953, 44373, 50712, 54970, 
-							59164, 59196, 61277, 61277, 61277, 
-							61277, 59196, 59164, 57051, 52857, 
-							46518, 42292, 35921, 31695, 27501, 
-							31695, 40147, 46486, 54938, 59196, 
-							63390, 63422, 63422, 63422, 63422, 
-							63422, 63422, 63390, 59196, 54970, 
-							50744, 44373, 38066, 33808, 29582, 
-							31695, 40147, 48599, 57051, 61309, 
-							63422, 65503, 65535, 65535, 65535, 
-							65535, 65535, 65535, 63390, 59164, 
-							52857, 46518, 42260, 33840, 29614, 
-							31727, 40179, 48599, 57051, 61309, 
-							65503, 65535, 65535, 65535, 65535, 
-							65535, 65535, 65535, 65503, 61277, 
-							54970, 48631, 42292, 35953, 31695, 
-							31727, 40147, 48599, 54970, 61277, 
-							63422, 65535, 65535, 65535, 65535, 
-							65535, 65535, 65535, 65503, 61309, 
-							57051, 50712, 42292, 35953, 31727, 
-							31727, 38066, 46518, 54970, 61277, 
-							63422, 65535, 65535, 65535, 65535, 
-							65535, 65535, 65535, 65503, 61309, 
-							57051, 50712, 44373, 38034, 31727, 
-							31695, 38034, 46518, 54938, 61277, 
-							63422, 65535, 65535, 65535, 65535, 
-							65535, 65535, 65535, 65503, 61309, 
-							57083, 50744, 44405, 38034, 31727, 
-							29614, 38034, 44405, 52857, 59196, 
-							63422, 65503, 65535, 65535, 65535, 
-							65535, 65535, 65535, 65503, 61309, 
-							57083, 50712, 44405, 38034, 31727, 
-							29582, 35953, 44405, 52825, 59164, 
-							63390, 65503, 65535, 65535, 65535, 
-							65535, 65535, 65535, 65503, 61309, 
-							57051, 50712, 42292, 38034, 31727, 
-							27501, 35921, 42292, 50712, 57051, 
-							61309, 63422, 65503, 65503, 65503, 
-							65503, 63422, 63422, 61309, 59196, 
-							54938, 48599, 42292, 35921, 31695, 
-							25388, 31727, 40179, 46518, 52857, 
-							59164, 61277, 63390, 63390, 61309, 
-							61309, 61309, 61277, 59196, 57051, 
-							52825, 46486, 40179, 33840, 29614, 
-							23275, 29614, 35953, 42292, 48631, 
-							52857, 57051, 59164, 59164, 59164, 
-							59164, 59164, 57083, 57051, 52857, 
-							48599, 42292, 38034, 31727, 27501, 
-							21162, 27469, 31727, 40147, 44405, 
-							50712, 50744, 52857, 54938, 54938, 
-							54938, 54938, 52857, 50744, 48631, 
-							44373, 40147, 35921, 29614, 27469, 
-							21130, 23275, 29582, 33808, 40147, 
-							42292, 46486, 46518, 48599, 48631, 
-							48631, 48599, 46518, 46486, 44373, 
-							40147, 35953, 31727, 29582, 25388, 
-							21130, 23243, 25388, 31695, 33808, 
-							38034, 40179, 42260, 44373, 42292, 
-							44373, 42292, 42260, 40179, 40147, 
-							35953, 33808, 29614, 27469, 25356
-							};
+	short tile_ur_x = px/20 + 1;
+	short tile_ur_y = py/20;
+
+	short tile_ll_x = px/20;
+	short tile_ll_y = py/20 + 1;
+
+	short tile_lr_x = px/20 + 1;
+	short tile_lr_y = py/20 + 1;
+
+	int tile_ul_ID = 16*tile_ul_y + tile_ul_x;
+	int tile_ur_ID = 16*tile_ur_y + tile_ur_x;
+	int tile_ll_ID = 16*tile_ll_y + tile_ll_x;
+	int tile_lr_ID = 16*tile_lr_y + tile_lr_x;
+
+	struct fb_copyarea rect;
+	rect.dx = tile_ul_x*20;
+	rect.dy = tile_ul_y*20;
+	rect.width = 40;
+	rect.height = 40;
+
+	int k;
+	int i;
+	int j;
+
+	const unsigned char* map = maps[mapIndex];
+
+	const unsigned short* sprite = sprites[2];
+
+
+
+
+/*
+
+	for (k = 0; k < SCREEN_SPRITE_COUNT; k++)
+	{
+		// .. which is why k is divided by two here while
+		// decoding the tile/sprite
+		unsigned char spriteID = (map[k/2] >> 4*(k%2)) & 0x0f;
+		const unsigned short* sprite = sprites[spriteID];
+
+		// decoding tile position
+		int x = (20*k)%320;
+		int y = 20*((20*k)/320);
+		int offset = x + 320*y;
+
+		// drawing tile to the screen buffer
+		for (j = 0; j < 20; j++)
+		{
+			for (i = 0; i < 20; i++)
+			{
+				screen[offset + 320*j + i] = sprite[i + 20*j];
+			}
+		}
+	}*/
+
+
+	
+	int offset = px + 320*py;
+	for (j = 0; j < 20; j++)
+	{
+		for (i = 0; i < 20; i++)
+		{
+			int index = i + 20*j;
+			if (sprite[index] != 0)
+			{
+				screen[offset + 320*j + i] = sprite[index];
+			}
+		}
+	}
+
+
+	// pushing buffer to screen
+	ioctl(fd, 0x4680, &rect);
+}
