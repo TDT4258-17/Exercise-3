@@ -8,8 +8,8 @@ int main()
 {
 	std::fstream file;
 	std::fstream ofile;
-	file.open("tile_textures/ladder_ice2.bmp", std::ios::in );
-	ofile.open("converted_textures/ladder_ice2_tile.txt", std::ios::out );
+	file.open("tile_textures/ladder.bmp", std::ios::in );
+	ofile.open("converted_textures/ladder_tile.txt", std::ios::out );
 
 
 	file.seekg(0, file.end);
