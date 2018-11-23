@@ -5,7 +5,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
-//#include <sys/read.h>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -45,8 +44,6 @@ int main(int argc, char *argv[])
 	{
 		printf("ERROR creating memory map for the screen.\n");
 	}
-
-
 
 
 	unsigned char currentMap = 0;
