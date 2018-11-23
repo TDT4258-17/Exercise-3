@@ -9,8 +9,8 @@ int main()
 
 	std::fstream file;
 	std::fstream ofile;
-	file.open("tile_textures/ice_break.bmp", std::ios::in );
-	ofile.open("converted_textures/ice_break_tile.txt", std::ios::out );
+	file.open("tile_textures/bush.bmp", std::ios::in );
+	ofile.open("converted_textures/bush_tile.txt", std::ios::out );
 
 	std::string string;
 	std::string string2;
