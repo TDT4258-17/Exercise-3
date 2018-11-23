@@ -47,16 +47,7 @@ void drawMap(int fd, int mapIndex, volatile short* screen)
 	ioctl(fd, 0x4680, &rect);
 }
 
-bool checkBorders()
-{
-	int tempx = (*px + dx);
-	int tempy = (*py + dy);
-	if ((tempx < 0 ) || (tempx > 320) || (tempy < 0) || (tempy > 240))
-	{
-		return true;
-	}
-	return false
-}
+
 
 void movePlayer(int fd, int mapIndex, signed char dx, signed char dy, unsigned short* px, unsigned short* py, volatile short* screen) 
 {
