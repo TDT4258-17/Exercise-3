@@ -70,11 +70,9 @@ int main(int argc, char *argv[])
 		buttons_old = buttons;
 		readButtons(&buttons, gpio);
 
-
-
 		if (buttons.left & !buttons_old.left)
 		{
-			px = px - 20;
+			movePlayer(-20, 0, &px, &py);
 		}
 		if (buttons.up & !buttons_old.up)
 		{
@@ -103,6 +101,38 @@ int main(int argc, char *argv[])
 	close(gpfd);
 
 	exit(EXIT_SUCCESS);
+}
+
+void movePlayer(signed char dx, signed char dy, unsigned short* px, unsigned short* py) 
+{
+	const unsigned char* map = maps[mapIndex];
+	
+	unsigned short pxPrev = *px;
+	unsigned short pyPrev = *py;
+	
+	// still need to check borders
+	
+	int mapTile = ((16*((*py+dy)/20))+((*px+dx)/20));
+	
+	if ((mapTile % 2 == 0) && ((map[mapTile] & (1 << 7)) == 0))	// mapTile is even AND move is valid
+	{
+		*px += dx;
+		*py += dy;
+	}
+	else if ((map[mapTile] & (1 << 3)) == 0)  	// mapTile is odd AND move is valid
+	{
+		*px += dx;
+		*py += dy;
+	}
+	
+	// drawPlayerDiscrete();
+	
+	
+	
+	
+	
+
+	
 }
 
 void readButtons(struct Buttons* buttons, unsigned char gpio)
