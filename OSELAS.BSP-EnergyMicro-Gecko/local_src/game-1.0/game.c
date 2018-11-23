@@ -32,13 +32,17 @@ int main(int argc, char *argv[])
 		printf("ERROR creating memory map for the screen.\n");
 	}
 
-
-
-
 	unsigned char currentMap = 0;
 
-	unsigned short px = 140;
-	unsigned short py = 120;
+	unsigned short px = 20;
+	unsigned short py = 20;
+
+	struct Player player;
+	player.px = px;
+	player.py = py;
+	player.pxOld = px;
+	player.pyOld = py;
+	player.life = 100;
 
 
 	drawMap(fbfd, currentMap, screen);
@@ -57,21 +61,30 @@ int main(int argc, char *argv[])
 		buttons_old = buttons;
 		readButtons(&buttons, gpio);
 
+		if (gpio)
+		{
+			printf("Px: %i; Py %i\n", px, py);
+		}
+
 		if (buttons.left & !buttons_old.left)
 		{
-			movePlayer(fbfd, currentMap, -20, 0, &px, &py, screen);
+			//movePlayer(fbfd, currentMap, -20, 0, &px, &py, screen);
+			movePlayer(fbfd, currentMap, screen, -20, 0, &player);
 		}
 		if (buttons.up & !buttons_old.up)
 		{
-			movePlayer(fbfd, currentMap, 0, -20, &px, &py, screen);
+			//movePlayer(fbfd, currentMap, 0, -20, &px, &py, screen);
+			movePlayer(fbfd, currentMap, screen, 0, -20, &player);
 		}
 		if (buttons.right & !buttons_old.right)
 		{
-			movePlayer(fbfd, currentMap, 20, 0, &px, &py, screen);
+			//movePlayer(fbfd, currentMap, 20, 0, &px, &py, screen);
+			movePlayer(fbfd, currentMap, screen, 20, 0, &player);
 		}
 		if (buttons.down & !buttons_old.down)
 		{
-			movePlayer(fbfd, currentMap, 0, 20, &px, &py, screen);
+			//movePlayer(fbfd, currentMap, 0, 20, &px, &py, screen);
+			movePlayer(fbfd, currentMap, screen, 0, 20, &player);
 		}
 
 		if (buttons.x)
