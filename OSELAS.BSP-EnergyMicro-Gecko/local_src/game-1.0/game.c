@@ -14,19 +14,6 @@
 #include "gamedata.h"
 #include "gameLogic.h"
 
-struct Buttons{
-	unsigned char left;
-	unsigned char up;
-	unsigned char right;
-	unsigned char down;
-
-	unsigned char y;
-	unsigned char x;
-	unsigned char a;
-	unsigned char b;
-};
-
-void readButtons(struct Buttons* buttons, unsigned char gpio);
 
 int main(int argc, char *argv[])
 {
@@ -45,16 +32,21 @@ int main(int argc, char *argv[])
 		printf("ERROR creating memory map for the screen.\n");
 	}
 
-
-
-
 	unsigned char currentMap = 0;
 
-	unsigned short px = 140;
-	unsigned short py = 120;
+	unsigned short px = 20;
+	unsigned short py = 20;
+
+	struct Player player;
+	player.px = px;
+	player.py = py;
+	player.pxOld = px;
+	player.pyOld = py;
+	player.life = 100;
 
 
 	drawMap(fbfd, currentMap, screen);
+
 
 	int quit = 0;
 
@@ -69,21 +61,30 @@ int main(int argc, char *argv[])
 		buttons_old = buttons;
 		readButtons(&buttons, gpio);
 
+		if (gpio)
+		{
+			printf("Px: %i; Py %i\n", px, py);
+		}
+
 		if (buttons.left & !buttons_old.left)
 		{
-			movePlayer(fbfd, currentMap, -20, 0, &px, &py, screen);
+			//movePlayer(fbfd, currentMap, -20, 0, &px, &py, screen);
+			movePlayer(fbfd, currentMap, screen, -20, 0, &player);
 		}
 		if (buttons.up & !buttons_old.up)
 		{
-			movePlayer(fbfd, currentMap, 0, -20, &px, &py, screen);
+			//movePlayer(fbfd, currentMap, 0, -20, &px, &py, screen);
+			movePlayer(fbfd, currentMap, screen, 0, -20, &player);
 		}
 		if (buttons.right & !buttons_old.right)
 		{
-			movePlayer(fbfd, currentMap, 20, 0, &px, &py, screen);
+			//movePlayer(fbfd, currentMap, 20, 0, &px, &py, screen);
+			movePlayer(fbfd, currentMap, screen, 20, 0, &player);
 		}
 		if (buttons.down & !buttons_old.down)
 		{
-			movePlayer(fbfd, currentMap, 0, 20, &px, &py, screen);
+			//movePlayer(fbfd, currentMap, 0, 20, &px, &py, screen);
+			movePlayer(fbfd, currentMap, screen, 0, 20, &player);
 		}
 
 		if (buttons.x)
@@ -101,16 +102,3 @@ int main(int argc, char *argv[])
 	exit(EXIT_SUCCESS);
 }
 
-
-void readButtons(struct Buttons* buttons, unsigned char gpio)
-{
-	buttons->left = gpio & 0x01;
-	buttons->up = (gpio & 0x02) >> 1;
-	buttons->right = (gpio & 0x04) >> 2;
-	buttons->down = (gpio & 0x08) >> 3;
-
-	buttons->y = (gpio & 0x10) >> 4;
-	buttons->x = (gpio & 0x20) >> 5;
-	buttons->a = (gpio & 0x40) >> 6;
-	buttons->b = (gpio & 0x80) >> 7;
-}
