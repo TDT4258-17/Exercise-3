@@ -1,6 +1,11 @@
 #ifndef GAMELOGIC_H
 #define GAMELOGIC_H
 
+
+///////////////////////////////////////////////////////////////////
+// GAME STATE STRUCTS //
+///////////////////////////////////////////////////////////////////
+
 struct Buttons{
 	unsigned char left;
 	unsigned char up;
@@ -22,17 +27,29 @@ struct Player{
 	unsigned char life;
 };
 
+struct GameState{
+	unsigned char currentMap;
+};
 
-void readButtons(struct Buttons* buttons, unsigned char gpio);
-void drawMap(int fd, int mapIndex, volatile short* screen);
+struct GameIO{
+	int fbfd;
+	volatile short* fbmmap;
+	int gpfd;
+};
 
-//void movePlayer(int fd, int mapIndex, signed char dx, signed char dy, unsigned short* px, unsigned short* py, volatile short* screen);
-void drawPlayerDiscrete(int fd, int mapIndex, unsigned short px, unsigned short py, unsigned short px_old, unsigned short py_old, volatile short* screen);
-void drawPlayer(int fd, int mapIndex, unsigned short px, unsigned short py, volatile short* screen);
+///////////////////////////////////////////////////////////////////
+// GAME FUNCTIONS //
+///////////////////////////////////////////////////////////////////
 
+void setupGame(int screenfd, int buttonfd, volatile short* fbmmap_);
+void gameLoop();
+void readButtons(unsigned char gpio);
 
-void movePlayer(int fd, int mapIndex, volatile short* screen, signed char dx, signed char dy, struct Player* player);/*
-void drawPlayerDiscrete(int fd, int mapIndex, volatile short* screen, struct Player* player);
-void drawPlayer(int fd, int mapIndex, volatile short* screen, struct Player* player);
-*/
+void drawMap();
+
+void movePlayerDiscrete(signed char dx, signed char dy);
+void drawPlayerDiscrete();
+
+void drawPlayer();
+
 #endif
