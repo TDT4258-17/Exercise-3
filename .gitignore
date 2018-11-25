@@ -1,4 +1,4 @@
-.md~
-.gitignore~
-.txt~
-.cpp~
+*.md~
+*.gitignore~
+*.txt~
+*.cpp~
