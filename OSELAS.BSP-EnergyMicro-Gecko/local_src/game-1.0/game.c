@@ -18,6 +18,8 @@ int main(int argc, char *argv[])
 	printf("New Game Started!!\n");
 	
 	int fbfd = open("/dev/fb0", O_RDWR);
+	if (fbfd < 0)
+		printf("ERROR opening screen file\n");
 	int gpfd = open("/dev/gamepad", O_RDWR);
 	if (gpfd < 0)
 		printf("ERROR opening gamepad device\n");

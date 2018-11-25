@@ -8,37 +8,66 @@ int main()
 {
 	std::fstream file;
 	std::fstream ofile;
-	file.open("tile_textures/rock.bmp", std::ios::in );
-	ofile.open("converted_textures/rock_tile.txt", std::ios::out );
+	file.open("tile_textures/player2.bmp", std::ios::in );
+	ofile.open("converted_textures/player2_sprite.txt", std::ios::out );
+	const int imageWidth = 16;
+	const int imageHeight = 16;
+	const int pixelCount = imageWidth*imageHeight;
 
 
 	file.seekg(0, file.end);
 	int size = file.tellg();
-	std::cout << "Size: " << size << "\n";
 	file.seekg(0, file.beg);
 
 	char fileContent[size];
 	file.read(fileContent, size);
 	file.seekg(0, file.beg);
 
-	ofile << "const unsigned short tile[400] = {\t";
-
+	int pixelReadCount = 0;
+	int currentRow = imageHeight;
 	unsigned short rgb = 0;
-	for (int i = (size-1); i >= (size-(400*3)); i -= 3)
+	unsigned short rgbArray[pixelCount];
+	int paddingPerRow = (4 - ((imageWidth*3)%4))%4;
+	int byteCount = pixelCount*3 + imageHeight*paddingPerRow;
+	
+	
+	
+
+	
+	
+	for (int i = (size-1); i >= (size-byteCount); i -= 3)
 	{
+		if (i)
 		rgb = ((((unsigned char)fileContent[i])/8));
 		rgb = rgb << 6 | (((unsigned char)fileContent[i-1])/4);
 		rgb = rgb << 5 | (((unsigned char)fileContent[i-2])/8);
-		ofile << rgb;
 
+		rgbArray[pixelReadCount++] = rgb;
+		
+		if (pixelReadCount%imageWidth == 0)
+		{
+			i -= paddingPerRow;
+		}
+	}
+	
+	std::cout << "Filesize in bytes: " << size << "\n";
+	std::cout << "Byte padding each row: " << paddingPerRow << "\n";
+	std::cout << "Imagesize in bytes without padding: " << pixelCount*3 << "\n";
+	std::cout << "Imagesize in bytes with padding: " << byteCount << "\n";
+	std::cout << "Pixel read count: " << pixelReadCount << "\n";
+	
 
-		if (i > size + 4 - 1200)
-			ofile << ", ";
-		else
-			std::cout << "Length of string: " << i+3 << "\n";
-
-	//	if ((i+3) % 15 == 0)
-	//		ofile << "\n\t\t\t\t\t\t\t\t\t\t";
+	ofile << "const unsigned short tile[" << pixelCount << "] = {\t";
+	for (int j = 0; j < imageHeight; j++)
+	{
+		int index = 0;
+		for(int i = 0; i < imageWidth; i++)
+		{
+			index = j*imageWidth + (imageWidth - i - 1);
+			ofile << rgbArray[index];	
+			if ((j*imageWidth + i) != (pixelCount-1))
+				ofile << ", ";	
+		}
 	}
 
 	ofile << "};";
@@ -48,3 +77,13 @@ int main()
 
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+

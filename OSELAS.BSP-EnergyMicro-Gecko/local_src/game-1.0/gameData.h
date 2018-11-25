@@ -18,38 +18,69 @@
 
 #define TILE_SIZE 20
 #define TILE_PIXEL_COUNT TILE_SIZE*TILE_SIZE // 400
-#define TILE_BYTE_SIZE 800
+#define TILE_BYTE_SIZE TILE_PIXEL_COUNT*2 // 800
+
+#define SPRITE_SIZE 16
+#define SPRITE_PIXEL_COUNT SPRITE_SIZE*SPRITE_SIZE // 256
+#define SPRITE_BYTE_SIZE SPRITE_PIXEL_COUNT*2 // 512
 
 ///////////////////////////////////////////////////////////////////
-// MAPS //
+// GAME STATE STRUCTS //
 ///////////////////////////////////////////////////////////////////
-extern const unsigned char map0[MAP_BYTE_SIZE];
-extern const unsigned char map1[MAP_BYTE_SIZE];
-extern const unsigned char map999[MAP_BYTE_SIZE];
+
+struct Buttons{
+	unsigned char left;
+	unsigned char up;
+	unsigned char right;
+	unsigned char down;
+
+	unsigned char y;
+	unsigned char x;
+	unsigned char a;
+	unsigned char b;
+};
+
+struct Player{
+	unsigned short px;
+	unsigned short py;
+	unsigned short pxOld;
+	unsigned short pyOld;
+
+	signed short vx;
+	signed short vy;
+
+
+	unsigned char posUpdate;
+	unsigned char life;
+};
+
+struct GameState{
+	unsigned char currentMap;
+};
+
+struct GameIO{
+	int fbfd;
+	volatile short* fbmmap;
+	int gpfd;
+};
+
+struct Map{
+	const unsigned char* mapTiles;
+	const unsigned char nextMapIDb;
+	const unsigned char nextMapIDu;
+	const unsigned char nextMapIDd;
+	const unsigned char nextMapIDl;
+	const unsigned char nextMapIDr;
+};
 
 ///////////////////////////////////////////////////////////////////
-// TILES //
+// GAME DATA //
 ///////////////////////////////////////////////////////////////////
-extern const unsigned short tile0[TILE_PIXEL_COUNT];
-extern const unsigned short tile1[TILE_PIXEL_COUNT];
-extern const unsigned short tile2[TILE_PIXEL_COUNT];
-extern const unsigned short tile3[TILE_PIXEL_COUNT];
-extern const unsigned short tile4[TILE_PIXEL_COUNT];
-extern const unsigned short tile5[TILE_PIXEL_COUNT];
+extern const struct Map* maps[7];
 
-extern const unsigned short tile8[TILE_PIXEL_COUNT];
-extern const unsigned short tile9[TILE_PIXEL_COUNT];
-extern const unsigned short tile10[TILE_PIXEL_COUNT];
-
-extern const unsigned short tile14[TILE_PIXEL_COUNT];
-extern const unsigned short tile15[TILE_PIXEL_COUNT];
-
-///////////////////////////////////////////////////////////////////
-// OTHER //
-///////////////////////////////////////////////////////////////////
 extern const unsigned short playerSprite[TILE_PIXEL_COUNT];
+extern const unsigned short playerSprite2[SPRITE_PIXEL_COUNT];
 
-extern const unsigned char* maps[2];
-extern const unsigned short* sprites[16];
+extern const unsigned short* tiles[16];
 
 #endif
