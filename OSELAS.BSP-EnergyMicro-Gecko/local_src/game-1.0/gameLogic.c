@@ -122,8 +122,8 @@ void readButtons(unsigned char gpio)
 
 void acceleratePlayer(signed char ax, signed char ay)
 {
-	plr.vx += 15*ax - plr.vx/2;
-	plr.vy += 15*ay - plr.vy/2;
+	plr.vx += 18*ax - plr.vx/2;
+	plr.vy += 18*ay - plr.vy/2;
 }
 
 unsigned char checkOutOfBounds(short pxn, short pyn)
@@ -509,6 +509,8 @@ void drawPlayer()
 			}
 		}
 	}
+
+
 	int offset = plr.px + 320*plr.py;
 	int index;
 	for (j = 1; j < SPRITE_SIZE; j++)

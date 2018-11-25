@@ -11,3 +11,4 @@ gerp
 grep
 README
 *.gdb
+*.c~
