@@ -20,16 +20,21 @@ int main(int argc, char *argv[])
 	int fbfd = open("/dev/fb0", O_RDWR);
 	if (fbfd < 0)
 		printf("ERROR opening screen file\n");
-	int gpfd = open("/dev/gamepad", O_RDWR);
-	if (gpfd < 0)
-		printf("ERROR opening gamepad device\n");
-
 	volatile short* screen = mmap(0, 320*240*2, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
 	if (!screen)
 		printf("ERROR creating memory map for the screen.\n");
 
-	setupGame(fbfd, gpfd, screen);	
-	gameLoop();
+	int gpfd = open("/dev/gamepad", O_RDWR);
+	if (gpfd < 0)
+	{
+		printf("ERROR opening gamepad device\n");
+		setupGame(fbfd, gpfd, screen);
+	}
+	else
+	{
+		setupGame(fbfd, gpfd, screen);
+		gameLoop();
+	}
 
 	close(fbfd);
 	close(gpfd);

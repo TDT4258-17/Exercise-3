@@ -49,8 +49,10 @@ struct Player{
 	signed short vx;
 	signed short vy;
 
+	//const unsigned short* currentSprite;
 
-	unsigned char posUpdate;
+	unsigned char facing; // acts as index for which sprite is used to draw the player
+	unsigned char onMapChangeTile;
 	unsigned char life;
 };
 
@@ -78,8 +80,11 @@ struct Map{
 ///////////////////////////////////////////////////////////////////
 extern const struct Map* maps[7];
 
+/*
 extern const unsigned short playerSprite[TILE_PIXEL_COUNT];
-extern const unsigned short playerSprite2[SPRITE_PIXEL_COUNT];
+extern const unsigned short playerSprite2[SPRITE_PIXEL_COUNT];*/
+
+extern const unsigned short* playerSprites[4];
 
 extern const unsigned short* tiles[16];
 

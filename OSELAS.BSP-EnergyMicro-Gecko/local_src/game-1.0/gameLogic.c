@@ -44,8 +44,11 @@ void setupGame(int screenfd, int buttonfd, volatile short* fbmmap_)
 	plr.vx = 0;
 	plr.vy = 0;
 
-	plr.posUpdate = 1;
+	plr.facing = 0; // 0: down. increasing counter clokcwise: 1: right, 2: up, 3: left
+	plr.onMapChangeTile = 0;
 	plr.life = 100;
+
+
 
 	drawMap();
 	drawPlayer();
@@ -73,18 +76,22 @@ void gameLoop()
 
 		if (btns.left)
 		{
+			plr.facing = 3;
 			ax = -1;
 		}
 		if (btns.up)
 		{
+			plr.facing = 2;
 			ay = -1;
 		}
 		if (btns.right)
 		{
+			plr.facing = 1;
 			ax += 1;
 		}
 		if (btns.down)
 		{
+			plr.facing = 0;
 			ay += 1;
 		}
 
@@ -93,7 +100,6 @@ void gameLoop()
 		{
 			playerUpdate();
 			drawPlayer();
-			plr.posUpdate = 0;
 		}
 		else
 		{
@@ -178,13 +184,11 @@ void playerUpdate()
 	if (outOfBounds)
 	{
 		// do something appropriate (maybe do not need to)
-		printf("Out of bounds. player pos: %i, %i; player old pos: %i, %i\n", plr.px, plr.py, plr.pxOld, plr.pyOld);
+		// printf("Out of bounds. player pos: %i, %i; player old pos: %i, %i\n", plr.px, plr.py, plr.pxOld, plr.pyOld);
 	}
 	else
-	{
-	// check for collisions
+	{ // check for collisions
 		// check for collisions along X axis
-
 		if (dx > 0)
 		{ // need to check upper and lower right tile
 
@@ -235,6 +239,7 @@ void playerUpdate()
 			}
 		}
 
+		// check for collisions along Y axis
 		if (dy > 0)
 		{ // need to check lower left and right tile
 
@@ -284,15 +289,39 @@ void playerUpdate()
 			}
 		}
 
+		if (collision)
+		{
+			plr.vx = 0;
+			plr.vy = 0;
+		}
+
 		if (goodMoveX)
 			plr.px = pxNext;
 		if (goodMoveY)
 			plr.py = pyNext;
 
-		if (collision)
+		// check if player landed on a map change tile
+		short tile_c_x = (plr.px + SPRITE_SIZE / 2) / 20;
+		short tile_c_y = (plr.py + SPRITE_SIZE / 2) / 20;
+		
+		unsigned char tileIndex = 16*tile_c_y + tile_c_x;
+		unsigned char tileID = (map[tileIndex/2]) >> 4*((tileIndex+1)%2) & 0x0f;
+
+		if (tileID == 7)
 		{
-			plr.vx = 0;
-			plr.vy = 0;
+			if (plr.onMapChangeTile == 0)
+			{
+				changeMap(0);
+				// center the player on the tile
+				plr.px = 20*tile_c_x + 2;
+				plr.py = 20*tile_c_y + 2;
+
+			}
+			plr.onMapChangeTile = 1;
+		}
+		else
+		{
+			plr.onMapChangeTile = 0;
 		}
 	}
 }	
@@ -347,7 +376,7 @@ void drawMap()
 
 void changeMap(unsigned char dir)
 {
-	char nextMapID;
+	char nextMapID = gs.currentMap;
 	switch (dir)
 	{
 	case 0: //block
@@ -519,9 +548,11 @@ void drawPlayer()
 		{
 
 			index = i + SPRITE_SIZE*j;
-			if (playerSprite2[index] != 0)
+			
+			//if (plr.currentSprite[index] != 0)
+			if (playerSprites[plr.facing][index] != 0)
 			{
-				gameIO.fbmmap[offset + 320*j + i] = playerSprite2[index];
+				gameIO.fbmmap[offset + 320*j + i] = playerSprites[plr.facing][index];
 			}
 		}
 	}
