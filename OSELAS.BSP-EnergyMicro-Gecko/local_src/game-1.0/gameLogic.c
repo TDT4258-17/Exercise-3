@@ -121,7 +121,7 @@ void gameLoop()
 		
 		//usleep(20000);
 		volatile int i = 0;
-		while (i < 100000)
+		while (i < 20000)
 		{
 			i = i + 1;
 		}
