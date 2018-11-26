@@ -43,7 +43,7 @@ static struct file_operations gamepad_fops =
  *
  * This is the first of two exported functions to handle inserting this
  * code into a running kernel
- *, 
+ *
  * Returns 0 if successfull, otherwise -1
  */
 

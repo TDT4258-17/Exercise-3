@@ -1,0 +1,19 @@
+# vim: set fdm=marker fdl=1:
+{{{ 2018-11-26T14:07:48+0100 /opt/ex3/ptxdist-2013/lib/ptxdist-2013.07.1/bin/ptxdist clean driver-sound
+
+}}} 2018-11-26T14:07:48+0100 /opt/ex3/ptxdist-2013/lib/ptxdist-2013.07.1/bin/ptxdist clean driver-sound; (exit value: 1)
+
+
+
+{{{ 2018-11-26T14:07:51+0100 /opt/ex3/ptxdist-2013/lib/ptxdist-2013.07.1/bin/ptxdist clean driver-sound-1
+
+}}} 2018-11-26T14:07:51+0100 /opt/ex3/ptxdist-2013/lib/ptxdist-2013.07.1/bin/ptxdist clean driver-sound-1; (exit value: 1)
+
+
+
+{{{ 2018-11-26T14:09:16+0100 /opt/ex3/ptxdist-2013/lib/ptxdist-2013.07.1/bin/ptxdist compile driver-gamepad
+
+}}} 2018-11-26T14:09:16+0100 /opt/ex3/ptxdist-2013/lib/ptxdist-2013.07.1/bin/ptxdist compile driver-gamepad; (exit value: 1)
+
+
+
