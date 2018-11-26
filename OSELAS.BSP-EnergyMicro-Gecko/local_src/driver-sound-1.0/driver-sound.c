@@ -17,7 +17,7 @@
 
 static int __init template_init(void)
 {
-	printk("Hello World, here is your module speaking\n");
+	printk("Hello World, \n");
 	return 0;
 }
 
@@ -30,7 +30,7 @@ static int __init template_init(void)
 
 static void __exit template_cleanup(void)
 {
-	 printk("Short life for a small module...\n");
+	 printk("Short life...\n");
 }
 
 module_init(template_init);
