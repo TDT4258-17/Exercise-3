@@ -9,8 +9,8 @@ int main()
 	std::fstream file;
 	std::fstream ofile;
 
-	file.open("tile_textures/leporcside.bmp", std::ios::in );
-	ofile.open("converted_textures/leporcside_sprite.txt", std::ios::out );
+	file.open("tile_textures/leporcside2.bmp", std::ios::in );
+	ofile.open("converted_textures/leporcside2_sprite.txt", std::ios::out );
 	const int imageWidth = 16;
 	const int imageHeight = 16;
 	const int pixelCount = imageWidth*imageHeight;

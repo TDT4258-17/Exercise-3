@@ -73,8 +73,6 @@ struct Map{
 	const unsigned char nextMapIDd;
 	const unsigned char nextMapIDl;
 	const unsigned char nextMapIDr;
-	const unsigned short startX;
-	const unsigned short startY;
 };
 
 ///////////////////////////////////////////////////////////////////

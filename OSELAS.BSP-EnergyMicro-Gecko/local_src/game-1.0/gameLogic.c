@@ -119,12 +119,16 @@ void gameLoop()
 		}
 
 		
-		//usleep(20000);
+		usleep(20000);
+		
+		/*
 		volatile int i = 0;
 		while (i < 20000)
 		{
 			i = i + 1;
 		}
+		*/
+		
 		
 	}
 
@@ -341,6 +345,12 @@ void playerUpdate()
 		{
 			plr.onMapChangeTile = 0;
 		}
+		
+		if (tileID == 3)
+		{
+			plr.px = maps[gs.currentMap]->startX;
+			plr.py = maps[gs.currentMap]->startY;
+		}
 	}
 }	
 
@@ -533,6 +543,8 @@ void drawPlayer()
 	int j;
 
 	const unsigned char* map = maps[gs.currentMap]->mapTiles;
+	
+	
 
 	for (k = 0; k < tileRedrawCount; k++)
 	{
@@ -557,7 +569,10 @@ void drawPlayer()
 			}
 		}
 	}
+	
+	
 
+	//drawMap();
 
 	int offset = plr.px + 320*(plr.py-1);
 	int index;
