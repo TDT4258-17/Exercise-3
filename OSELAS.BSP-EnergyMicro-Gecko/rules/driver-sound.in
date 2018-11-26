@@ -1,0 +1,8 @@
+## SECTION=project_specific
+
+config DRIVER_SOUND
+	tristate
+	select KERNEL
+	prompt "driver-sound"
+	help
+	  FIXME
