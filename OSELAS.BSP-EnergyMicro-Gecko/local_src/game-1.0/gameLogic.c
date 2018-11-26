@@ -27,8 +27,19 @@ static struct Player plr;
 // GAME FUNCTIONS //
 ///////////////////////////////////////////////////////////////////
 
-void setupGame(int screenfd, int buttonfd, volatile short* fbmmap_)
+void interruptHandler(unsigned char gpio_)
 {
+	printf("YS\n");
+	readButtons(gpio_);
+}
+
+void setupGame(int screenfd, int buttonfd, volatile short* fbmmap_)
+{/*
+	int ret = 0;
+	ret = ioctl(gameIO.gpfd, &interruptHandler);
+	if (ret != 0)
+		printf("Failed to write function pointer to gpio device: %i\n", ret);*/
+
 	gameIO.fbfd = screenfd;
 	gameIO.fbmmap = fbmmap_;
 
@@ -107,7 +118,9 @@ void gameLoop()
 			plr.vy = 0;
 		}
 
+		read(gameIO.gpfd, &gpio, 0);
 		usleep(20000);
+		read(gameIO.gpfd, &gpio, 0);
 	}
 
 	clearScreen();

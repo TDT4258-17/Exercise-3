@@ -15,7 +15,6 @@
 #include <linux/fs.h>
 #include <linux/device.h>
 #include <linux/interrupt.h>
-//#include <linux/>
 
 #include "efm32gg.h"
 
@@ -26,11 +25,14 @@ static struct cdev my_cdev;
 static dev_t dev;
 static unsigned char portC_din;
 
+static void dummmyFunction(unsigned char a);
+static void (*func_p)(unsigned char) = &dummmyFunction;
+
 static int gamepad_open(struct inode *inode, struct file *filp);
 static int gamepad_release(struct inode *inode, struct file *filp);
 static int gamepad_read(struct file *filp, char __user *buff, size_t count, loff_t *offp);
 static ssize_t gamepad_write(struct file *filp, const char __user *buff, size_t count, loff_t *offp);
-
+//static int gamepad_ioctl(struct inode * inode, struct file * filp, unsigned int cmd, unsigned long arg);
 
 
 static struct file_operations gamepad_fops = 
@@ -39,8 +41,14 @@ static struct file_operations gamepad_fops =
 	.open = gamepad_open,
 	.release = gamepad_release,
 	.read = gamepad_read,
-	.write = gamepad_write
+	.write = gamepad_write,
+	//.ioctl = gamepad_ioctl
 };
+
+static void dummmyFunction(unsigned char a)
+{
+	printk("D\n");
+}
 
 irqreturn_t gpio_handler(int irq, void* dev_id)
 {
@@ -48,6 +56,7 @@ irqreturn_t gpio_handler(int irq, void* dev_id)
 	gpio_remap_int[7] = gpio_remap_int[5];
 	//printk("GP-INT\n");
 	portC_din = ~(gpio_remap_pc[7]);
+	(*func_p)(portC_din);
 	return 0;
 }
 
@@ -170,6 +179,7 @@ static int gamepad_release(struct inode *inode, struct file *filp)
 static int gamepad_read(struct file *filp, char __user *buff, size_t count, loff_t *offp)
 {
 	//*buff = ~(gpio_remap_pc[7]);
+	printk("R\n");
 	*buff = portC_din;
 	return 0;
 }
@@ -177,6 +187,14 @@ static ssize_t gamepad_write(struct file *filp, const char __user *buff, size_t 
 {
 	return 0;
 }
+/*
+static int gamepad_ioctl(struct inode * inode, struct file * filp, unsigned int cmd, unsigned long arg)
+{
+	printk("Write works not? %i\n", cmd);
+	//copy_from_user();
+	//func_p = buff;
+	return 0;
+}*/
 
 module_init(template_init);
 module_exit(template_cleanup);
