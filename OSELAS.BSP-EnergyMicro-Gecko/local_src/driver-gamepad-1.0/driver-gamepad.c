@@ -179,12 +179,13 @@ static int gamepad_release(struct inode *inode, struct file *filp)
 static int gamepad_read(struct file *filp, char __user *buff, size_t count, loff_t *offp)
 {
 	//*buff = ~(gpio_remap_pc[7]);
-	printk("R\n");
+	//printk("R\n");
 	*buff = portC_din;
 	return 0;
 }
 static ssize_t gamepad_write(struct file *filp, const char __user *buff, size_t count, loff_t *offp)
 {
+
 	return 0;
 }
 /*

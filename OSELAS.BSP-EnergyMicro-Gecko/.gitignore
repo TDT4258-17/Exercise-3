@@ -12,3 +12,6 @@ grep
 README
 *.gdb
 *.c~
+selected_ptxconfig
+selected_platformconfig
+selected_toolchain

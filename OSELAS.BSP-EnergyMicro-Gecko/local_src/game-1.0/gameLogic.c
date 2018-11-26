@@ -118,9 +118,14 @@ void gameLoop()
 			plr.vy = 0;
 		}
 
-		read(gameIO.gpfd, &gpio, 0);
-		usleep(20000);
-		read(gameIO.gpfd, &gpio, 0);
+		
+		//usleep(20000);
+		volatile int i = 0;
+		while (i < 100000)
+		{
+			i = i + 1;
+		}
+		
 	}
 
 	clearScreen();
@@ -380,6 +385,7 @@ void drawMap()
 			for (i = 0; i < TILE_SIZE; i++)
 			{
 				gameIO.fbmmap[offset + 320*j + i] = tile[i + 20*j];
+			
 			}
 		}
 	}
@@ -553,9 +559,9 @@ void drawPlayer()
 	}
 
 
-	int offset = plr.px + 320*plr.py;
+	int offset = plr.px + 320*(plr.py-1);
 	int index;
-	for (j = 1; j < SPRITE_SIZE; j++)
+	for (j = 0; j < SPRITE_SIZE; j++)
 	{
 		for (i = 0; i < SPRITE_SIZE; i++)
 		{
@@ -576,7 +582,7 @@ void drawPlayer()
 	rect.dx = plr.px;
 	rect.dy = plr.py;
 	rect.width = SPRITE_SIZE;
-	rect.height = SPRITE_SIZE;
+	rect.height = SPRITE_SIZE-1;
 
 	// pushing buffer to screen
 	ioctl(gameIO.fbfd, 0x4680, &rect);
