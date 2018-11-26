@@ -1,7 +1,4 @@
 /platform-energymicro-efm32gg-dk3750
-/platforms
-/projectroot
-/rules
 /selected_toolchain
 /selected_platformconfig
 /selected_ptxconfig
@@ -12,6 +9,7 @@ grep
 README
 *.gdb
 *.c~
+.gitignore~
 selected_ptxconfig
 selected_platformconfig
 selected_toolchain
