@@ -15,31 +15,39 @@
 
 int main(int argc, char *argv[])
 {
-	printf("New Game Started!!\n");
+	int error = 0;
 	
 	int fbfd = open("/dev/fb0", O_RDWR);
 	if (fbfd < 0)
+	{
 		printf("ERROR opening screen file\n");
+		error = 1;
+	}
+
 	volatile short* screen = mmap(0, 320*240*2, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
 	if (!screen)
+	{
 		printf("ERROR creating memory map for the screen.\n");
+		error = 1;
+	}
 
 	int gpfd = open("/dev/gamepad", O_RDWR);
 	if (gpfd < 0)
 	{
 		printf("ERROR opening gamepad device\n");
-		setupGame(fbfd, gpfd, screen);
+		error = 1;
 	}
-	else
+	
+	if (error == 0)
 	{
 		setupGame(fbfd, gpfd, screen);
 		gameLoop();
 	}
 
+
 	close(fbfd);
 	close(gpfd);
 
-	printf("Game Exit\n");
 	exit(EXIT_SUCCESS);
 }
 

@@ -23,7 +23,7 @@
 
 static int __init template_init(void)
 {
-	printk("Hello World, \n");
+	printk("Loaded Sound driver\n");
 	return 0;
 }
 
@@ -36,12 +36,12 @@ static int __init template_init(void)
 
 static void __exit template_cleanup(void)
 {
-	 printk("Short life...\n");
+	 printk("Unladed Sound driver\n");
 }
 
 module_init(template_init);
 module_exit(template_cleanup);
 
-MODULE_DESCRIPTION("Small module, demo only, not very useful.");
+MODULE_DESCRIPTION("Sound module.");
 MODULE_LICENSE("GPL");
 

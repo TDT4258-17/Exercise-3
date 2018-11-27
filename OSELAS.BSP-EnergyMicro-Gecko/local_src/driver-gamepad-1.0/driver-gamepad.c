@@ -90,31 +90,21 @@ static int __init template_init(void)
 		printk(KERN_ALERT "ERROR Remapping memory region 2 for GPIO driver?\n");
 		
 	//*GPIO_PC_MODEL = 0x33333333;
-	gpio_remap_pc[1] = 0x33333333;/*
-	gpio_remap_pc[4] = 0x33;
-	gpio_remap_pc[5] = 0x33;
-	gpio_remap_pc[6] = 0x33;
-	gpio_remap_pc[7] = 0x33;*/
+	gpio_remap_pc[1] = 0x33333333;
 
 	//*GPIO_PC_DOUT = 0xff;
-//	gpio_remap_pc[12] = 0xff;
 	gpio_remap_pc[3] |= 0xff;
 
 	// *GPIO_EXTIPSELL = 0x22222222;	// Choose port C pins for interrupt generation
-	gpio_remap_int[0] = 0x22222222;/*
-	gpio_remap_int[0] = 0x22;
-	gpio_remap_int[1] = 0x22;
-	gpio_remap_int[2] = 0x22;
-	gpio_remap_int[3] = 0x22;*/
+	gpio_remap_int[0] = 0x22222222;
 	
 	// *GPIO_EXTIRISE = 0xff;			// gen int at rising edge
-//	gpio_remap_int[8] = 0xff;
 	gpio_remap_int[2] |= 0xff;
+
 	// *GPIO_EXTIFALL = 0xff;			// gen int at falling edge
-//	gpio_remap_int[12] = 0xff;
 	gpio_remap_int[3] |= 0xff;
+
 	// *GPIO_IEN = 0xff;				// Enable GPIO interrupts for 8 least significant bits
-//	gpio_remap_int[16] = 0xff;
 	gpio_remap_int[4] |= 0xff;
 
 
@@ -145,7 +135,7 @@ static int __init template_init(void)
 
 	portC_din = 0;
 
-	printk("Initialized GPIO driver\n");
+	printk("Loaded GPIO driver\n");
 	return 0;
 }
 
@@ -163,7 +153,7 @@ static void __exit template_cleanup(void)
 	free_irq(17, 0);
 	free_irq(18, 0);
 
-	printk("Uninitialized GPIO driver\n");
+	printk("Unloaded GPIO driver\n");
 }
 
 // DRIVER FUNCTIONS

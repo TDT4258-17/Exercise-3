@@ -40,6 +40,8 @@ void setupGame(int screenfd, int buttonfd, volatile short* fbmmap_)
 	if (ret != 0)
 		printf("Failed to write function pointer to gpio device: %i\n", ret);*/
 
+	printf("New Game Started!!\n");
+	
 	gameIO.fbfd = screenfd;
 	gameIO.fbmmap = fbmmap_;
 
@@ -61,7 +63,7 @@ void setupGame(int screenfd, int buttonfd, volatile short* fbmmap_)
 
 	plr.facing = 0; // 0: down. increasing value clokcwise: 1: right, 2: up, 3: left
 	plr.onMapChangeTile = 0;
-	plr.life = 100;
+	plr.easterEgg = 0;
 
 
 
@@ -135,6 +137,8 @@ void gameLoop()
 	}
 
 	clearScreen();
+
+	printf("Game Exit\n");
 }
 
 void readButtons(unsigned char gpio)
@@ -587,10 +591,19 @@ void drawPlayer()
 
 			index = i + SPRITE_SIZE*j;
 			
-			//if (plr.currentSprite[index] != 0)
-			if (playerSprites[plr.facing][index] != 0)
+			if (plr.easterEgg)
 			{
-				gameIO.fbmmap[offset + 320*j + i] = playerSprites[plr.facing][index];
+				if (playerSpritesEE[plr.facing][index] != 0)
+				{
+					gameIO.fbmmap[offset + 320*j + i] = playerSpritesEE[plr.facing][index];
+				}
+			}
+			else 
+			{
+				if (playerSprites[plr.facing][index] != 0)
+				{
+					gameIO.fbmmap[offset + 320*j + i] = playerSprites[plr.facing][index];
+				}
 			}
 		}
 	}
