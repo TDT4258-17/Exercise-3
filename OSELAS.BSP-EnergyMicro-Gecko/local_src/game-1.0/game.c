@@ -15,6 +15,8 @@
 
 int main(int argc, char *argv[])
 {
+	// Opening IO devices
+
 	int error = 0;
 
 	int fbfd = open("/dev/fb0", O_RDWR);
@@ -44,6 +46,8 @@ int main(int argc, char *argv[])
 		printf("ERROR opening sound device\n");
 		error = 1;
 	}
+
+	// starting game if everything was fine
 	
 	if (error == 0)
 	{
@@ -51,6 +55,7 @@ int main(int argc, char *argv[])
 		gameLoop();
 	}
 
+	// closing IO devices
 
 	close(fbfd);
 	close(gpfd);

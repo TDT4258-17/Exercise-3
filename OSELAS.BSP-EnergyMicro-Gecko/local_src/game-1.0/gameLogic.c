@@ -1,11 +1,6 @@
 #include <linux/fb.h>
 #include <sys/ioctl.h>
 #include <stdio.h>
-
-//#include <sys/types.h>
-//#include <sys/stat.h>
-//#include <sys/mman.h>
-//#include <fcntl.h>
 #include <unistd.h>
 
 #include "gameLogic.h"
@@ -13,6 +8,7 @@
 
 ///////////////////////////////////////////////////////////////////
 // GAME STATE & CONFIG VARIABLES //
+// check gameData.h for info about htese structs //
 ///////////////////////////////////////////////////////////////////
 
 static struct GameIO gameIO;

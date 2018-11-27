@@ -74,7 +74,6 @@ static int __init sound_driver_init(void)
 	request_mem_region(0x40004000, 0x02c, "sdDev");
 	dac_remap = ioremap_nocache(0x40004000, 0x02c);
 
-
 	request_mem_region(0x40010c00, 0x028, "sdDev");
 	timer_remap = ioremap_nocache(0x40010c00, 0x28);
 
@@ -84,8 +83,6 @@ static int __init sound_driver_init(void)
 	dac_remap[3] = 1;
 
 	// configuring TIMER3
-	//*TIMER1_CTRL &= 0xf0ffffff;
-	//*TIMER1_CTRL |= 0x05000000;
 	timer_remap[0] &= 0xf0ffffff;
 	timer_remap[0] |= 0x07000000; // HFPERCLK divided by 2^7=128 => 109.375 kHz
 
