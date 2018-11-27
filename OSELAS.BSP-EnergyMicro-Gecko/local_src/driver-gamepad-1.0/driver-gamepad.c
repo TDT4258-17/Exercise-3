@@ -9,7 +9,7 @@
 #include <linux/sched.h>
 
 //#include <linux/platform_device.h>
-//#include <linux/ioport.h>
+
 #include <linux/io.h>
 #include <linux/cdev.h>
 #include <linux/fs.h>
@@ -60,6 +60,40 @@ irqreturn_t gpio_handler(int irq, void* dev_id)
 	return 0;
 }
 
+/* 
+
+// How to linux platform driver?
+
+static const struct of_device_id my_of_match[] =
+{
+	{ .compatible = "tdt4258",},
+	{ }
+};
+MODULE_DEVICE_TABLE(of, my_of_match);
+
+static struct platform_driver my_driver = 
+{
+	.probe = my_probe,
+	.remove = my_remove,
+	.driver = 
+	{
+		.name = "my",
+		.owner = THIS_MODULE,
+		.of_match_table = my_of_match
+	}
+}
+
+static int my_probe(struct platform_device *dev)
+{
+	return 0;
+}
+
+static int my_remove(struct platform_device *dev)
+{
+	return 0;
+}
+
+*/
 
 /*
  * template_init - function to insert this module into kernel space
@@ -72,6 +106,9 @@ irqreturn_t gpio_handler(int irq, void* dev_id)
 
 static int __init template_init(void)
 {
+
+	//platform_driver_register(&my_driver);
+
 	int error = 0;
 	
 	//struct resource* mem_resource = request_mem_region(0x40006048, 20, "CharDevice");
