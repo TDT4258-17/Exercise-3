@@ -183,7 +183,7 @@ static ssize_t sound_write(struct file *filp, const char __user *buff, size_t co
 	{
 	case 0: // button
 		top = 500;
-		duration = 130;
+		duration = 50;
 		timer_remap[7] = top;
 		break;
 	case 1: // map change
