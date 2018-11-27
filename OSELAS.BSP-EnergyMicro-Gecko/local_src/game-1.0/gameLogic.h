@@ -5,7 +5,7 @@
 // GAME FUNCTIONS //
 ///////////////////////////////////////////////////////////////////
 
-void setupGame(int screenfd, int buttonfd, volatile short* fbmmap_);
+void setupGame(int screenfd, int buttonfd, int soundfd, volatile short* fbmmap_);
 void gameLoop();
 void readButtons(unsigned char gpio);
 void changeMap(unsigned char dir);

@@ -33,7 +33,7 @@ void interruptHandler(unsigned char gpio_)
 	readButtons(gpio_);
 }
 
-void setupGame(int screenfd, int buttonfd, volatile short* fbmmap_)
+void setupGame(int screenfd, int buttonfd, int soundfd, volatile short* fbmmap_)
 {/*
 	int ret = 0;
 	ret = ioctl(gameIO.gpfd, &interruptHandler);
@@ -44,8 +44,8 @@ void setupGame(int screenfd, int buttonfd, volatile short* fbmmap_)
 
 	gameIO.fbfd = screenfd;
 	gameIO.fbmmap = fbmmap_;
-
 	gameIO.gpfd = buttonfd;
+	gameIO.sdfd = soundfd;
 
 	gs.currentMap = 0;
 
@@ -118,6 +118,14 @@ void gameLoop()
 		{
 			plr.facing = 0;
 			ay += plr.speed;
+		}
+		if (btns.a)
+		{
+			read(gameIO.sdfd, NULL, 0);
+		}
+		if (btns.b)
+		{
+			write(gameIO.sdfd, NULL, 0);
 		}
 
 		acceleratePlayer(ax, ay);

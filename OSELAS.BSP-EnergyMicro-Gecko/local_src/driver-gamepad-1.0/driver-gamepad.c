@@ -41,22 +41,13 @@ static struct file_operations gamepad_fops =
 	.open = gamepad_open,
 	.release = gamepad_release,
 	.read = gamepad_read,
-	.write = gamepad_write,
-	//.ioctl = gamepad_ioctl
+	.write = gamepad_write
 };
-
-static void dummmyFunction(unsigned char a)
-{
-	printk("D\n");
-}
 
 irqreturn_t gpio_handler(int irq, void* dev_id)
 {
-	
 	gpio_remap_int[7] = gpio_remap_int[5];
-	//printk("GP-INT\n");
 	portC_din = ~(gpio_remap_pc[7]);
-	//(*func_p)(portC_din);
 	return 0;
 }
 
@@ -112,17 +103,17 @@ static int __init template_init(void)
 	int error = 0;
 	
 	//struct resource* mem_resource = request_mem_region(0x40006048, 20, "CharDevice");
-	request_mem_region(0x40006048, 0x20, "gpDev");
+	request_mem_region(0x40006048, 0x24, "gpDev");
 	if (error < 0)
 		printk(KERN_ALERT "ERROR Requestig memory region 1 for GPIO driver?\n");
-	request_mem_region(0x40006100, 0x1c, "gpDev");
+	request_mem_region(0x40006100, 0x20, "gpDev");
 	if (error < 0)
 		printk(KERN_ALERT "ERROR Requestig memory region 2 for GPIO driver?\n");
 
-	gpio_remap_pc  = ioremap_nocache(0x40006048, 0x20);
+	gpio_remap_pc  = ioremap_nocache(0x40006048, 0x24);
 	if (gpio_remap_pc == NULL)
 		printk(KERN_ALERT "ERROR Remapping memory region 1 for GPIO driver?\n");
-	gpio_remap_int = ioremap_nocache(0x40006100, 0x1c);
+	gpio_remap_int = ioremap_nocache(0x40006100, 0x20);
 	if (gpio_remap_int == NULL)
 		printk(KERN_ALERT "ERROR Remapping memory region 2 for GPIO driver?\n");
 		
@@ -185,6 +176,13 @@ static int __init template_init(void)
 
 static void __exit template_cleanup(void)
 {
+	gpio_remap_pc[1] = 0x0;
+	gpio_remap_pc[3] = 0x0;
+	gpio_remap_int[0] = 0x0;
+	gpio_remap_int[2] = 0x0;
+	gpio_remap_int[3] = 0x0;
+	gpio_remap_int[4] = 0x0;
+
 	device_destroy(cl, dev);
 	class_destroy(cl);
 	free_irq(17, 0);
@@ -205,8 +203,6 @@ static int gamepad_release(struct inode *inode, struct file *filp)
 }
 static int gamepad_read(struct file *filp, char __user *buff, size_t count, loff_t *offp)
 {
-	//*buff = ~(gpio_remap_pc[7]);
-	//printk("R\n");
 	*buff = portC_din;
 	return 0;
 }
@@ -215,19 +211,9 @@ static ssize_t gamepad_write(struct file *filp, const char __user *buff, size_t 
 
 	return 0;
 }
-/*
-static int gamepad_ioctl(struct inode * inode, struct file * filp, unsigned int cmd, unsigned long arg)
-{
-	printk("Write works not? %i\n", cmd);
-	//copy_from_user();
-	//func_p = buff;
-	return 0;
-}*/
 
 module_init(template_init);
 module_exit(template_cleanup);
-//module_init(__init);
-//module_exit(__exit);
 
 MODULE_DESCRIPTION("Gamepad Module.");
 MODULE_LICENSE("GPL");

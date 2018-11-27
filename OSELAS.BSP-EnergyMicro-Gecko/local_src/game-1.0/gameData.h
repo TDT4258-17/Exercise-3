@@ -67,6 +67,7 @@ struct GameIO{
 	int fbfd;
 	volatile short* fbmmap;
 	int gpfd;
+	int sdfd;
 };
 
 struct Map{

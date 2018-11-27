@@ -16,7 +16,7 @@
 int main(int argc, char *argv[])
 {
 	int error = 0;
-	
+
 	int fbfd = open("/dev/fb0", O_RDWR);
 	if (fbfd < 0)
 	{
@@ -37,16 +37,24 @@ int main(int argc, char *argv[])
 		printf("ERROR opening gamepad device\n");
 		error = 1;
 	}
+
+	int sdfd = open("/dev/sound", O_RDWR);
+	if (sdfd < 0)
+	{
+		printf("ERROR opening sound device\n");
+		error = 1;
+	}
 	
 	if (error == 0)
 	{
-		setupGame(fbfd, gpfd, screen);
+		setupGame(fbfd, gpfd, sdfd, screen);
 		gameLoop();
 	}
 
 
 	close(fbfd);
 	close(gpfd);
+	close(sdfd);
 
 	exit(EXIT_SUCCESS);
 }
