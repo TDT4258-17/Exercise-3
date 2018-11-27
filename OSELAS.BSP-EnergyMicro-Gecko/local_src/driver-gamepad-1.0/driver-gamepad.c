@@ -183,10 +183,10 @@ static void __exit template_cleanup(void)
 	gpio_remap_int[3] = 0x0;
 	gpio_remap_int[4] = 0x0;
 
-	device_destroy(cl, dev);
-	class_destroy(cl);
 	free_irq(17, 0);
 	free_irq(18, 0);
+	device_destroy(cl, dev);
+	class_destroy(cl);
 
 	printk("Unloaded GPIO driver\n");
 }

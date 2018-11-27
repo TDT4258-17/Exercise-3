@@ -27,19 +27,8 @@ static struct Player plr;
 // GAME FUNCTIONS //
 ///////////////////////////////////////////////////////////////////
 
-void interruptHandler(unsigned char gpio_)
-{
-	printf("YS\n");
-	readButtons(gpio_);
-}
-
 void setupGame(int screenfd, int buttonfd, int soundfd, volatile short* fbmmap_)
-{/*
-	int ret = 0;
-	ret = ioctl(gameIO.gpfd, &interruptHandler);
-	if (ret != 0)
-		printf("Failed to write function pointer to gpio device: %i\n", ret);*/
-
+{
 	printf("New Game Started!!\n");
 
 	gameIO.fbfd = screenfd;
@@ -65,7 +54,6 @@ void setupGame(int screenfd, int buttonfd, int soundfd, volatile short* fbmmap_)
 	plr.onMapChangeTile = 0;
 
 	plr.easterEgg = 0;
-
 
 	drawMap();
 	drawPlayer();
@@ -119,13 +107,10 @@ void gameLoop()
 			plr.facing = 0;
 			ay += plr.speed;
 		}
-		if (btns.a)
+		if (btns.b == 1 && btnsOld.b == 0)
 		{
-			read(gameIO.sdfd, NULL, 0);
-		}
-		if (btns.b)
-		{
-			write(gameIO.sdfd, NULL, 0);
+			char hoi = 0;
+			write(gameIO.sdfd, &hoi, 1);
 		}
 
 		acceleratePlayer(ax, ay);
@@ -365,11 +350,20 @@ void playerUpdate()
 		{
 			plr.px = plr.entryX;
 			plr.py = plr.entryY;
+
+			char hoi = 2;
+			write(gameIO.sdfd, &hoi, 1);
+
 			plr.onMapChangeTile = 1;
 			if (gs.currentMap == 6)
 			{
-				plr.easterEgg = 1;
-				printf("Transformation complete!\n");
+				if (plr.easterEgg == 0)
+				{
+					printf("Transformation complete!\n");
+					char hoi = 3;
+					write(gameIO.sdfd, &hoi, 1);
+					plr.easterEgg = 1;
+				}
 			}
 		}
 	}
@@ -405,6 +399,9 @@ void changeMap(unsigned char dir)
 	{
 		gs.currentMap = nextMapID;
 		printf("New MAP: %i!\n", gs.currentMap);
+
+		char hoi = 1;
+		write(gameIO.sdfd, &hoi, 1);
 
 		drawMap();
 		drawPlayer();
