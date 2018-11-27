@@ -587,7 +587,8 @@ void drawPlayer()
 		}
 	}
 
-	int offset = plr.px + 320*(plr.py-1);
+	//int offset = plr.px + 320*(plr.py-1);
+	int offset = plr.px + 320*plr.py;
 	int index;
 	for (j = 0; j < SPRITE_SIZE; j++)
 	{
@@ -619,7 +620,7 @@ void drawPlayer()
 	rect.dx = plr.px;
 	rect.dy = plr.py;
 	rect.width = SPRITE_SIZE;
-	rect.height = SPRITE_SIZE-1;
+	rect.height = SPRITE_SIZE;
 
 	// pushing buffer to screen
 	ioctl(gameIO.fbfd, 0x4680, &rect);
