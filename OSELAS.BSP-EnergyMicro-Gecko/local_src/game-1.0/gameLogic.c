@@ -41,7 +41,7 @@ void setupGame(int screenfd, int buttonfd, volatile short* fbmmap_)
 		printf("Failed to write function pointer to gpio device: %i\n", ret);*/
 
 	printf("New Game Started!!\n");
-	
+
 	gameIO.fbfd = screenfd;
 	gameIO.fbmmap = fbmmap_;
 
@@ -63,8 +63,8 @@ void setupGame(int screenfd, int buttonfd, volatile short* fbmmap_)
 
 	plr.facing = 0; // 0: down. increasing value clokcwise: 1: right, 2: up, 3: left
 	plr.onMapChangeTile = 0;
-	plr.easterEgg = 0;
 
+	plr.easterEgg = 0;
 
 
 	drawMap();
@@ -358,6 +358,11 @@ void playerUpdate()
 			plr.px = plr.entryX;
 			plr.py = plr.entryY;
 			plr.onMapChangeTile = 1;
+			if (gs.currentMap == 6)
+			{
+				plr.easterEgg = 1;
+				printf("Transformation complete!\n");
+			}
 		}
 	}
 }

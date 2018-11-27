@@ -55,6 +55,7 @@ struct Player{
 
 	unsigned char facing; // acts as index for which sprite is used to draw the player
 	unsigned char onMapChangeTile;
+
 	unsigned char easterEgg;
 };
 
@@ -85,6 +86,7 @@ struct Map{
 
 extern const struct Map* maps[7];
 extern const unsigned short* playerSprites[4];
+extern const unsigned short* playerSpritesEE[4];
 extern const unsigned short* tiles[16];
 
 #endif

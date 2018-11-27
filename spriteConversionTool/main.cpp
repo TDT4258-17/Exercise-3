@@ -6,15 +6,34 @@
 
 int main()
 {
+	std::string filename = "steveleft"; // Filename without externsion
+
 	std::fstream file;
 	std::fstream ofile;
 
-	file.open("tile_textures/leporcside2.bmp", std::ios::in );
-	ofile.open("converted_textures/leporcside2_sprite.txt", std::ios::out );
 	const int imageWidth = 16;
 	const int imageHeight = 16;
 	const int pixelCount = imageWidth*imageHeight;
+	
+	int pixelReadCount = 0;
+	int currentRow = imageHeight;
+	unsigned short rgb = 0;
+	unsigned short rgbArray[pixelCount];
+	int paddingPerRow = (4 - ((imageWidth*3)%4))%4;
+	int byteCount = pixelCount*3 + imageHeight*paddingPerRow;
 
+	std::string path1 = "tile_textures/";
+	std::string path2 = "converted_textures/";
+	std::string string1 = ".bmp";
+	std::string string2 = "_sprite.txt";
+	std::string iFilePath = path1 + filename + string1;
+	std::string oFilePath = path2 + filename + string2;
+
+
+
+
+	file.open(iFilePath.c_str(), std::ios::in );
+	ofile.open(oFilePath.c_str(), std::ios::out );
 
 	file.seekg(0, file.end);
 	int size = file.tellg();
@@ -24,16 +43,7 @@ int main()
 	file.read(fileContent, size);
 	file.seekg(0, file.beg);
 
-	int pixelReadCount = 0;
-	int currentRow = imageHeight;
-	unsigned short rgb = 0;
-	unsigned short rgbArray[pixelCount];
-	int paddingPerRow = (4 - ((imageWidth*3)%4))%4;
-	int byteCount = pixelCount*3 + imageHeight*paddingPerRow;
 	
-	
-	
-
 	
 	for (int i = (size-1); i >= (size-byteCount); i -= 3)
 	{
