@@ -6,7 +6,6 @@
 /tests
 gerp
 grep
-README
 *.gdb
 *.c~
 .gitignore~
