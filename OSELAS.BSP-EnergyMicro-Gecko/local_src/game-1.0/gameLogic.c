@@ -51,11 +51,15 @@ void setupGame(int screenfd, int buttonfd, volatile short* fbmmap_)
 	plr.py = 120;
 	plr.pxOld = plr.px;
 	plr.pyOld = plr.py;
+	plr.entryX = plr.px;
+	plr.entryY = plr.py;
+
+	plr.speed = 1;
 
 	plr.vx = 0;
 	plr.vy = 0;
 
-	plr.facing = 0; // 0: down. increasing counter clokcwise: 1: right, 2: up, 3: left
+	plr.facing = 0; // 0: down. increasing value clokcwise: 1: right, 2: up, 3: left
 	plr.onMapChangeTile = 0;
 	plr.life = 100;
 
@@ -81,6 +85,14 @@ void gameLoop()
 		{
 			quit = 1;
 		}
+		if (btns.y)
+		{
+			plr.speed = 2;
+		}
+		else
+		{
+			plr.speed = 1;
+		}
 
 		signed char ax = 0;
 		signed char ay = 0;
@@ -88,22 +100,22 @@ void gameLoop()
 		if (btns.left)
 		{
 			plr.facing = 3;
-			ax = -1;
+			ax = -plr.speed;
 		}
 		if (btns.up)
 		{
 			plr.facing = 2;
-			ay = -1;
+			ay = -plr.speed;
 		}
 		if (btns.right)
 		{
 			plr.facing = 1;
-			ax += 1;
+			ax += plr.speed;
 		}
 		if (btns.down)
 		{
 			plr.facing = 0;
-			ay += 1;
+			ay += plr.speed;
 		}
 
 		acceleratePlayer(ax, ay);
@@ -120,16 +132,6 @@ void gameLoop()
 
 		
 		usleep(20000);
-		
-		/*
-		volatile int i = 0;
-		while (i < 20000)
-		{
-			i = i + 1;
-		}
-		*/
-		
-		
 	}
 
 	clearScreen();
@@ -333,10 +335,11 @@ void playerUpdate()
 		{
 			if (plr.onMapChangeTile == 0)
 			{
-				changeMap(0);
 				// center the player on the tile
 				plr.px = 20*tile_c_x + 2;
 				plr.py = 20*tile_c_y + 2;
+
+				changeMap(0);
 
 			}
 			plr.onMapChangeTile = 1;
@@ -348,11 +351,57 @@ void playerUpdate()
 		
 		if (tileID == 3)
 		{
-			plr.px = maps[gs.currentMap]->startX;
-			plr.py = maps[gs.currentMap]->startY;
+			plr.px = plr.entryX;
+			plr.py = plr.entryY;
+			plr.onMapChangeTile = 1;
 		}
 	}
-}	
+}
+
+void changeMap(unsigned char dir)
+{
+	char nextMapID = gs.currentMap;
+	switch (dir)
+	{
+	case 0: //block
+		nextMapID = maps[gs.currentMap]->nextMapIDb;
+		break;
+	case 1: //up
+		nextMapID = maps[gs.currentMap]->nextMapIDu;
+		plr.py = SCREEN_HEIGHT - SPRITE_SIZE;
+		break;
+	case 2: //down
+		nextMapID = maps[gs.currentMap]->nextMapIDd;
+		plr.py = 0;
+		break;
+	case 3: //left
+		nextMapID = maps[gs.currentMap]->nextMapIDl;
+		plr.px = SCREEN_WIDTH - SPRITE_SIZE;
+		break;
+	case 4: //right
+		nextMapID = maps[gs.currentMap]->nextMapIDr;
+		plr.px = 0;
+		break;
+	}
+
+	if (nextMapID != 255)
+	{
+		gs.currentMap = nextMapID;
+		printf("New MAP: %i!\n", gs.currentMap);
+
+		drawMap();
+		drawPlayer();
+	}
+	else
+	{
+		plr.px = SCREEN_WIDTH/2;
+		plr.py = SCREEN_HEIGHT/2;
+		printf("Not actually new map: %i!\n", gs.currentMap);
+	}
+
+	plr.entryX = plr.px;
+	plr.entryY = plr.py;
+}
 
 ///////////////////////////////////////////////////////////////////
 // GAME GRAPHICS //
@@ -401,47 +450,6 @@ void drawMap()
 	}
 	// pushing buffer to screen
 	ioctl(gameIO.fbfd, 0x4680, &rect);
-}
-
-void changeMap(unsigned char dir)
-{
-	char nextMapID = gs.currentMap;
-	switch (dir)
-	{
-	case 0: //block
-		nextMapID = maps[gs.currentMap]->nextMapIDb;
-		break;
-	case 1: //up
-		nextMapID = maps[gs.currentMap]->nextMapIDu;
-		plr.py = SCREEN_HEIGHT - SPRITE_SIZE;
-		break;
-	case 2: //down
-		nextMapID = maps[gs.currentMap]->nextMapIDd;
-		plr.py = 0;
-		break;
-	case 3: //left
-		nextMapID = maps[gs.currentMap]->nextMapIDl;
-		plr.px = SCREEN_WIDTH - SPRITE_SIZE;
-		break;
-	case 4: //right
-		nextMapID = maps[gs.currentMap]->nextMapIDr;
-		plr.px = 0;
-		break;
-	}
-	if (nextMapID != 255)
-	{
-		gs.currentMap = nextMapID;
-		printf("New MAP: %i!\n", gs.currentMap);
-
-		drawMap();
-		drawPlayer();
-	}
-	else
-	{
-		plr.px = SCREEN_WIDTH/2;
-		plr.py = SCREEN_HEIGHT/2;
-		printf("Not actually new map: %i!\n", gs.currentMap);
-	}
 }
 
 void clearScreen()
@@ -569,10 +577,6 @@ void drawPlayer()
 			}
 		}
 	}
-	
-	
-
-	//drawMap();
 
 	int offset = plr.px + 320*(plr.py-1);
 	int index;

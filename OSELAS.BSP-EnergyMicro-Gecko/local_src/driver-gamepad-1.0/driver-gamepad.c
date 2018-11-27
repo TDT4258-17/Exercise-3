@@ -56,7 +56,7 @@ irqreturn_t gpio_handler(int irq, void* dev_id)
 	gpio_remap_int[7] = gpio_remap_int[5];
 	//printk("GP-INT\n");
 	portC_din = ~(gpio_remap_pc[7]);
-	(*func_p)(portC_din);
+	//(*func_p)(portC_din);
 	return 0;
 }
 
@@ -202,6 +202,6 @@ module_exit(template_cleanup);
 //module_init(__init);
 //module_exit(__exit);
 
-MODULE_DESCRIPTION("Small module, demo only, not very useful.");
+MODULE_DESCRIPTION("Gamepad Module.");
 MODULE_LICENSE("GPL");
 

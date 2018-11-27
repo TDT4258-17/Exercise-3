@@ -45,6 +45,10 @@ struct Player{
 	unsigned short py;
 	unsigned short pxOld;
 	unsigned short pyOld;
+	unsigned short entryX;
+	unsigned short entryY;
+
+	char speed;
 
 	signed short vx;
 	signed short vy;
