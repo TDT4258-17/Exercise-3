@@ -3,7 +3,6 @@
 /selected_platformconfig
 /selected_ptxconfig
 /src
-/tests
 gerp
 grep
 *.gdb
